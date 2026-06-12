@@ -42,7 +42,7 @@ export async function POST(request: Request): Promise<Response> {
   if (!paymentToken || looksLikePan(paymentToken)) {
     return json(400, {
       ok: false,
-      message: "Submit a Collect.js payment token, not raw card data.",
+      message: "Submit a Kicbac.js payment token, not raw card data.",
     });
   }
 

@@ -1,6 +1,6 @@
 # Security policy
 
-This example is intentionally safe-by-default: it uses Collect.js hosted fields and sends only `payment_token` values to the server.
+This example is intentionally safe-by-default: it uses Kicbac.js hosted fields and sends only `payment_token` values to the server.
 
 ## Reporting a problem
 

@@ -21,7 +21,7 @@ pnpm build
 
 ## Guardrails
 
-- Keep the example tokenized with Collect.js hosted fields.
+- Keep the example tokenized with Kicbac.js hosted fields.
 - Never add raw-card form fields.
 - Never commit `.env.local`, live keys, or real payment data.
 - Keep the checkout amount decided server-side.

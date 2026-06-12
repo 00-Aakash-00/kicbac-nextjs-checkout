@@ -1,5 +1,5 @@
 {
-  "name": "kicbac-nextjs-checkout",
+  "name": "@kicbac/example-nextjs-checkout",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,28 +8,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@kicbac/nextjs": "^0.1.0",
-    "@kicbac/react": "^0.1.0",
-    "kicbac": "^0.1.0",
+    "@kicbac/nextjs": "workspace:^",
+    "@kicbac/react": "workspace:^",
+    "kicbac": "workspace:^",
     "next": "^16.2.9",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^24.10.0",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "typescript": "5.9.3"
-  },
-  "description": "Standalone Next.js subscription checkout demo for Kicbac payments.",
-  "license": "MIT",
-  "packageManager": "pnpm@9.15.4",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/00-Aakash-00/kicbac-nextjs-checkout.git"
-  },
-  "bugs": {
-    "url": "https://github.com/00-Aakash-00/kicbac-nextjs-checkout/issues"
-  },
-  "homepage": "https://github.com/00-Aakash-00/kicbac-nextjs-checkout#readme"
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:"
+  }
 }
