@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Next.js build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - id: registry
+        name: Check Kicbac packages
+        run: |
+          if pnpm view @kicbac/nextjs version && pnpm view @kicbac/react version && pnpm view kicbac version; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "Kicbac npm packages are not published yet; skipping standalone build."
+          fi
+      - if: steps.registry.outputs.published == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.registry.outputs.published == 'true'
+        run: pnpm typecheck
+      - if: steps.registry.outputs.published == 'true'
+        run: pnpm build
