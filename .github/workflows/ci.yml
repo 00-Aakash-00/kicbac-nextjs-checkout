@@ -11,8 +11,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Next.js build
+  build-against-source:
+    name: Build against kicbac-js@main (packed tarballs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with: { repository: 00-Aakash-00/kicbac-js, path: kicbac-js }
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: pnpm -C kicbac-js install --frozen-lockfile
+      - run: pnpm --dir kicbac-js exec turbo run build
+      - run: pnpm --dir kicbac-js -r --filter kicbac --filter @kicbac/js --filter @kicbac/react --filter @kicbac/nextjs --filter @kicbac/themes exec pnpm pack
+      - run: node scripts/use-local-kicbac.mjs kicbac-js
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm build
+
+  build-against-registry:
+    name: Build against published packages (when available)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,16 +40,15 @@ jobs:
         with:
           node-version: 24
       - id: registry
-        name: Check Kicbac packages
         run: |
           if pnpm view @kicbac/nextjs version && pnpm view @kicbac/react version && pnpm view kicbac version; then
             echo "published=true" >> "$GITHUB_OUTPUT"
           else
             echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "Kicbac npm packages are not published yet; skipping standalone build."
+            echo "::notice::Kicbac npm packages not published yet; registry lane skipped (source lane is authoritative)."
           fi
       - if: steps.registry.outputs.published == 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
       - if: steps.registry.outputs.published == 'true'
         run: pnpm typecheck
       - if: steps.registry.outputs.published == 'true'

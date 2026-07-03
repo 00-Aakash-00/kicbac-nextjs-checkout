@@ -5,12 +5,16 @@ Thanks for improving the Kicbac checkout example.
 ## Setup
 
 ```sh
-pnpm install
+pnpm -C ../kicbac-js install
+pnpm --dir ../kicbac-js exec turbo run build
+pnpm --dir ../kicbac-js -r --filter kicbac --filter @kicbac/js --filter @kicbac/react --filter @kicbac/nextjs --filter @kicbac/themes exec pnpm pack
+node scripts/use-local-kicbac.mjs ../kicbac-js
+pnpm install --no-frozen-lockfile
 cp .env.example .env.local
 pnpm dev
 ```
 
-The Kicbac npm packages must be published before this standalone repo can install and build from the public registry.
+The Kicbac npm packages are not published yet, so use the local tarball workflow above. Do not commit the temporary `package.json` overrides or generated `pnpm-lock.yaml`; after first publish, commit a lockfile and restore frozen registry installs.
 
 ## Checks
 

@@ -9,6 +9,8 @@ const plan = {
   dayFrequency: 30,
 } as const;
 
+const MAX_BODY_BYTES = 16 * 1024;
+
 interface SubscribeBody {
   paymentToken?: unknown;
   planId?: unknown;
@@ -33,7 +35,15 @@ function looksLikePan(value: string): boolean {
 export async function POST(request: Request): Promise<Response> {
   let body: SubscribeBody;
   try {
-    body = (await request.json()) as SubscribeBody;
+    const contentLength = request.headers.get("content-length");
+    if (contentLength !== null && Number(contentLength) > MAX_BODY_BYTES) {
+      return json(413, { ok: false, message: "The request body is too large." });
+    }
+    const buffer = await request.arrayBuffer();
+    if (buffer.byteLength > MAX_BODY_BYTES) {
+      return json(413, { ok: false, message: "The request body is too large." });
+    }
+    body = JSON.parse(new TextDecoder().decode(buffer)) as SubscribeBody;
   } catch {
     return json(400, { ok: false, message: "The request body must be JSON." });
   }
