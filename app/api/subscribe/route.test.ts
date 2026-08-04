@@ -46,6 +46,23 @@ describe("POST /api/subscribe", () => {
 
   afterEach(() => vi.unstubAllEnvs());
 
+  it("rejects a non-JSON content type before any SDK call", async () => {
+    const response = await POST(
+      new Request("http://localhost/api/subscribe", {
+        method: "POST",
+        headers: { "content-type": "text/plain" },
+        body: JSON.stringify({
+          paymentToken: "tok_test",
+          planId: "monthly-pro",
+          attemptId: ATTEMPT_ID,
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(createSubscription).not.toHaveBeenCalled();
+  });
+
   it.each(["null", "[]", '"payment-token"'])(
     "rejects a non-object JSON body: %s",
     async (body: string) => {
@@ -150,7 +167,11 @@ describe("POST /api/subscribe", () => {
 
     expect(response.status).toBe(200);
     expect(createSubscription).toHaveBeenCalledWith(
-      expect.objectContaining({ orderId: REFERENCE_ID, paymentToken: "tok_test" }),
+      expect.objectContaining({
+        orderId: REFERENCE_ID,
+        paymentToken: "tok_test",
+        currency: "USD",
+      }),
     );
     expect(REFERENCE_ID).not.toContain(ATTEMPT_ID);
     await expect(response.json()).resolves.toEqual({

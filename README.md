@@ -13,7 +13,9 @@ The hosted Kicbac.js fields keep raw card data out of the normal application flo
 The browser-generated `attemptId` is only a checkout support key. The server
 uses the already-required `KICBAC_SECURITY_KEY` to derive a stable, opaque
 gateway order reference with a domain-separated HMAC; it never forwards the
-browser value as `orderId`.
+browser value as `orderId`. The browser also keeps unresolved attempts in
+`sessionStorage`, so refreshing the tab does not silently expose a new form.
+That marker is a UX guard, not a durable duplicate-prevention mechanism.
 
 ## Status
 
@@ -76,9 +78,10 @@ This repository is a sandbox demo, not a deploy-as-is production checkout. The
 derived gateway reference is a correlation aid, not replay protection or an
 idempotency guarantee. Before deployment, authenticate the caller, bind each
 subscription to that account, add CSRF and rate-limit controls, and persist each
-`attemptId`/gateway order ID mapping in a database with a unique constraint. If
-a request fails without a definitive gateway result, reconcile that reference
-before allowing another attempt; never retry subscription creation
-automatically.
+`attemptId`/gateway order ID mapping in a database. Enforce at most one active
+`processing` or `unconfirmed` attempt per account and operation, even if the
+browser presents a new attempt ID. If a request fails without a definitive
+gateway result, reconcile that reference before releasing the active-attempt
+lock; never retry subscription creation automatically.
 
 After those controls are in place, deploy to Vercel or another Next.js-compatible host and set the three environment variables in its secret manager.

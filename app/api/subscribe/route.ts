@@ -33,6 +33,13 @@ function hasOnlyKeys(value: Record<string, unknown>, allowed: ReadonlySet<string
   return Object.keys(value).every((key) => allowed.has(key));
 }
 
+function isJsonRequest(request: Request): boolean {
+  return (
+    request.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase() ===
+    "application/json"
+  );
+}
+
 function looksLikePan(value: string): boolean {
   return /^\d{13,19}$/.test(value.replace(/[\s-]/g, ""));
 }
@@ -47,6 +54,10 @@ function referenceForAttempt(attemptId: string, securityKey: string): string {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  if (!isJsonRequest(request)) {
+    return json(400, { ok: false, message: "The request content type must be application/json." });
+  }
+
   let body: Record<string, unknown>;
   try {
     const buffer = await readBodyCapped(request, MAX_BODY_BYTES);
@@ -112,6 +123,7 @@ export async function POST(request: Request): Promise<Response> {
       },
       paymentToken,
       orderId: referenceId,
+      currency: "USD",
       billing: {
         firstName,
         lastName: lastNameParts.join(" ") || "Customer",
