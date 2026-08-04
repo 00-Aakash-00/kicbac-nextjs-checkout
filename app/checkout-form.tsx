@@ -160,6 +160,10 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
       if (referenceId) rememberAttempt(attemptId, referenceId);
       const reconciliationHandle = referenceId ? `Reference: ${referenceId}` : fallbackHandle;
       const responseMessage = typeof payload.message === "string" ? payload.message : undefined;
+      const subscriptionId =
+        typeof payload.subscriptionId === "string" && payload.subscriptionId.trim() !== ""
+          ? payload.subscriptionId.trim()
+          : null;
 
       if (result.status === 402 && payload.ok === false) {
         attemptIdRef.current = null;
@@ -169,7 +173,7 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
         throw new Error(message);
       }
 
-      if (!result.ok || payload.ok !== true) {
+      if (!result.ok || payload.ok !== true || !subscriptionId) {
         const message = `${
           responseMessage ??
           "The subscription outcome could not be confirmed. Do not submit again until it is reconciled."
@@ -181,7 +185,7 @@ export function CheckoutForm({ plan }: CheckoutFormProps) {
       setState({
         kind: "success",
         message: "Subscription created.",
-        subscriptionId: typeof payload.subscriptionId === "string" ? payload.subscriptionId : null,
+        subscriptionId,
       });
       attemptIdRef.current = null;
       forgetAttempt();

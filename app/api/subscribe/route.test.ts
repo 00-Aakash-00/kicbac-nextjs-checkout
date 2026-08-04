@@ -182,6 +182,37 @@ describe("POST /api/subscribe", () => {
     });
   });
 
+  it.each([null, "", "   "])(
+    "treats an approval without a subscription ID as unconfirmed: %j",
+    async (subscriptionId) => {
+      createSubscription.mockResolvedValue({
+        ok: true,
+        subscriptionId,
+        transactionId: "txn-123",
+      });
+
+      const response = await POST(
+        request(
+          JSON.stringify({
+            paymentToken: "tok_test",
+            planId: "monthly-pro",
+            attemptId: ATTEMPT_ID,
+          }),
+        ),
+      );
+
+      expect(response.status).toBe(500);
+      await expect(response.json()).resolves.toEqual({
+        ok: false,
+        message:
+          "Approval received without a subscription ID. Reconcile it using the reference ID " +
+          "before retrying.",
+        referenceId: REFERENCE_ID,
+        retryable: false,
+      });
+    },
+  );
+
   it("returns a definitive typed decline with its gateway reference", async () => {
     createSubscription.mockResolvedValue({
       ok: false,

@@ -143,6 +143,17 @@ export async function POST(request: Request): Promise<Response> {
       });
     }
 
+    if (!result.subscriptionId?.trim()) {
+      return json(500, {
+        ok: false,
+        message:
+          "Approval received without a subscription ID. Reconcile it using the reference ID " +
+          "before retrying.",
+        referenceId,
+        retryable: false,
+      });
+    }
+
     return json(200, {
       ok: true,
       subscriptionId: result.subscriptionId,
