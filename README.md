@@ -8,7 +8,12 @@ The app uses:
 - `@kicbac/nextjs` for token charge and webhook route helpers
 - `kicbac` for server-side gateway calls
 
-Raw card data never reaches the Next.js server. The browser sends only a Kicbac.js `payment_token`.
+The hosted Kicbac.js fields keep raw card data out of the normal application flow. The browser sends JSON `paymentToken`; the server validates the allowlisted payload, and the SDK sends `payment_token` to the gateway. Request bodies are never logged.
+
+The browser-generated `attemptId` is only a checkout support key. The server
+uses the already-required `KICBAC_SECURITY_KEY` to derive a stable, opaque
+gateway order reference with a domain-separated HMAC; it never forwards the
+browser value as `orderId`.
 
 ## Status
 
@@ -58,12 +63,22 @@ KICBAC_WEBHOOK_SIGNING_KEY=your-test-webhook-signing-key
 Before publish, use the local tarball workflow above, then:
 
 ```sh
+pnpm test
 pnpm typecheck
 pnpm build
 ```
 
 After the Kicbac packages are published, install from the registry and commit a `pnpm-lock.yaml`.
 
-## Deploy
+## Production hardening
 
-The app can deploy to Vercel or any Next.js-compatible host. Set the three environment variables above in the hosting provider's secret manager.
+This repository is a sandbox demo, not a deploy-as-is production checkout. The
+derived gateway reference is a correlation aid, not replay protection or an
+idempotency guarantee. Before deployment, authenticate the caller, bind each
+subscription to that account, add CSRF and rate-limit controls, and persist each
+`attemptId`/gateway order ID mapping in a database with a unique constraint. If
+a request fails without a definitive gateway result, reconcile that reference
+before allowing another attempt; never retry subscription creation
+automatically.
+
+After those controls are in place, deploy to Vercel or another Next.js-compatible host and set the three environment variables in its secret manager.

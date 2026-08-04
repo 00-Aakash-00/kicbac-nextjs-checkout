@@ -27,6 +27,7 @@ jobs:
       - run: pnpm --dir kicbac-js -r --filter kicbac --filter @kicbac/js --filter @kicbac/react --filter @kicbac/nextjs --filter @kicbac/themes exec pnpm pack
       - run: node scripts/use-local-kicbac.mjs kicbac-js
       - run: pnpm install --no-frozen-lockfile
+      - run: pnpm test
       - run: pnpm typecheck
       - run: pnpm build
 
@@ -49,6 +50,8 @@ jobs:
           fi
       - if: steps.registry.outputs.published == 'true'
         run: pnpm install --no-frozen-lockfile
+      - if: steps.registry.outputs.published == 'true'
+        run: pnpm test
       - if: steps.registry.outputs.published == 'true'
         run: pnpm typecheck
       - if: steps.registry.outputs.published == 'true'

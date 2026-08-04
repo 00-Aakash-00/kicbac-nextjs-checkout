@@ -1,9 +1,15 @@
 import { CheckoutForm } from "./checkout-form";
 
+const amount = "29.00";
+
 const plan = {
   id: "monthly-pro",
   name: "Monthly Pro",
-  amount: "29.00",
+  amount,
+  displayAmount: new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(Number(amount)),
   cadence: "Billed every 30 days",
   included: ["Tokenized hosted fields", "Verified webhooks", "Customer Vault ready"],
 };
@@ -14,7 +20,14 @@ export default function Page() {
       <section className="checkout-grid" aria-label="Subscription checkout">
         <div className="summary-panel">
           <header className="brand-row">
-            <img src="/brand/kicbac_logo_nav.svg" alt="Kicbac" className="brand-logo" />
+            <img
+              src="/brand/kicbac_logo_nav.svg"
+              alt="Kicbac"
+              className="brand-logo"
+              width="400"
+              height="100"
+              fetchPriority="high"
+            />
             <span>Sandbox demo</span>
           </header>
 
@@ -28,7 +41,7 @@ export default function Page() {
           </div>
 
           <div className="price-row">
-            <span className="price">${plan.amount}</span>
+            <span className="price">{plan.displayAmount}</span>
             <span>{plan.cadence}</span>
           </div>
 

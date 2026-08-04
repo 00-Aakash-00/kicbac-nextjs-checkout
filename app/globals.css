@@ -34,6 +34,7 @@ body {
 button,
 input {
   font: inherit;
+  touch-action: manipulation;
 }
 
 .page-shell {
@@ -83,9 +84,12 @@ input {
 }
 
 .brand-logo {
-  width: 128px;
+  width: 144px;
   height: auto;
   display: block;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.96);
 }
 
 .plan-copy {
@@ -176,6 +180,10 @@ h2 {
   background: #ffffff;
 }
 
+.payment-panel .eyebrow {
+  color: #9f176f;
+}
+
 .amount-chip {
   flex: 0 0 auto;
   border: 1px solid var(--kb-border);
@@ -213,9 +221,9 @@ h2 {
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.customer-fields input:focus {
-  border-color: var(--kb-accent);
-  box-shadow: 0 0 0 3px rgba(240, 74, 196, 0.14);
+.customer-fields input:focus-visible {
+  border-color: #9f176f;
+  box-shadow: 0 0 0 3px rgba(159, 23, 111, 0.2);
 }
 
 .payment-panel .kb-root {
