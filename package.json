@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "test": "vitest run",
+    "test": "vitest run app/api/subscribe/route.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
